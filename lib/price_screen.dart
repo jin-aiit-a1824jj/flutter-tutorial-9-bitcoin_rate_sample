@@ -1,3 +1,4 @@
+import 'package:bitcoinratesampel/coin_data.dart';
 import 'package:flutter/material.dart';
 
 class PriceScreen extends StatefulWidget {
@@ -47,11 +48,7 @@ class _PriceScreenState extends State<PriceScreen> {
             color: Colors.lightBlue,
             child: DropdownButton<String>(
               value: selectedCurrency,
-              items: [
-                DropdownMenuItem(child: Text('USD'), value: 'USD',),
-                DropdownMenuItem(child: Text('EUR'), value: 'EUR',),
-                DropdownMenuItem(child: Text('GBP'), value: 'GBP',),
-              ],
+              items: getDropDownItems(),
               onChanged: (value){
                 print(value);
                 setState(() {
@@ -63,5 +60,14 @@ class _PriceScreenState extends State<PriceScreen> {
         ],
       ),
     );
+  }
+
+  List<DropdownMenuItem> getDropDownItems() {
+    var dropdownItems = List<DropdownMenuItem<String>>();
+    for(String currency in currenciesList){
+      var item = DropdownMenuItem(child: Text(currency), value: currency);
+      dropdownItems.add(item);
+    }
+    return dropdownItems;
   }
 }
