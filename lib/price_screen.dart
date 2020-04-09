@@ -1,3 +1,4 @@
+import 'package:bitcoinratesampel/NetworkHelper.dart';
 import 'package:bitcoinratesampel/coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
+
   String selectedCurrency = 'USD';
+  double rate = 0.00;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = ${rate.toStringAsFixed(2)} $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -42,6 +45,7 @@ class _PriceScreenState extends State<PriceScreen> {
               ),
             ),
           ),
+
           Container(
             height: 150.0,
             alignment: Alignment.center,
@@ -65,11 +69,9 @@ class _PriceScreenState extends State<PriceScreen> {
     return DropdownButton<String>(
       value: selectedCurrency,
       items: dropdownItems,
-      onChanged: (value) {
-        print(value);
-        setState(() {
-          selectedCurrency = value;
-        });
+      onChanged: (value) async {
+        selectedCurrency = value;
+        updateUI(await getRate());
       },
     );
   }
@@ -84,15 +86,33 @@ class _PriceScreenState extends State<PriceScreen> {
       ));
     }
 
-
     return CupertinoPicker(
       itemExtent: 32.0,
-      onSelectedItemChanged: (selectedIndex) {
-        print(selectedIndex);
+      onSelectedItemChanged: (selectedIndex) async {
+        selectedCurrency = currenciesList[selectedIndex];
+        updateUI(await getRate());
       },
       children: pickerItems,
       backgroundColor: Colors.lightBlue,
     );
   }
 
+  void updateUI(dynamic data){
+    setState(() {
+      print(data);
+      if (data == null){
+        rate = 0.00;
+        return;
+      }
+      rate = data['rate'];
+    });
+  }
+
+  Future<dynamic> getRate() async{
+    String url = 'http://rest.coinapi.io/v1/exchangerate/BTC/$selectedCurrency?apikey=apikey';
+    NetworkHelper networkHelper = NetworkHelper(url);
+    return await networkHelper.getData();
+  }
+
 }
+
