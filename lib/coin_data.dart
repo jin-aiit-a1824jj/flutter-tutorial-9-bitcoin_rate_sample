@@ -28,4 +28,10 @@ const List<String> cryptoList = [
   'LTC',
 ];
 
+enum crypto{
+  BTC,
+  ETH,
+  LTC,
+}
+
 class CoinData {}

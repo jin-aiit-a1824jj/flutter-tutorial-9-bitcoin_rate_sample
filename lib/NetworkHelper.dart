@@ -15,6 +15,7 @@ class NetworkHelper {
       return decodeData;
     }else{
       print(response.statusCode);
+      print(response.body);
       return null;
     }
   }
